@@ -1823,6 +1823,67 @@ app2.listen(3001);
 </div>
 
 ## Q. What is difference between `spawn()` and `fork()` methods in Node.js?
+In Node.js, both `spawn()` and `fork()` methods are used to create child processes, but they are designed for different use cases and have some key differences.
+
+### `spawn()` Method:
+
+The `spawn()` method is a general-purpose function for spawning child processes. It is part of the `child_process` module in Node.js. This method is typically used to run standalone commands in a new process. It returns a `ChildProcess` object.
+
+**Example:**
+```javascript
+const { spawn } = require('child_process');
+
+const ls = spawn('ls', ['-l', '/']);
+
+ls.stdout.on('data', (data) => {
+  console.log(`stdout: ${data}`);
+});
+
+ls.stderr.on('data', (data) => {
+  console.error(`stderr: ${data}`);
+});
+
+ls.on('close', (code) => {
+  console.log(`child process exited with code ${code}`);
+});
+```
+
+### `fork()` Method:
+
+The `fork()` method is a special case of `spawn()` that is specifically designed for creating child processes running Node.js scripts. It is also part of the `child_process` module. When you use `fork()`, it launches a new instance of the Node.js runtime and runs the specified script in that new process. Communication between the parent and child processes is facilitated through inter-process communication (IPC).
+
+**Example:**
+```javascript
+const { fork } = require('child_process');
+
+const child = fork('child.js');
+
+child.on('message', (message) => {
+  console.log(`Message from child: ${message}`);
+});
+
+child.send({ hello: 'world' });
+```
+
+### Key Differences:
+
+1. **Use Case:**
+   - Use `spawn()` when you want to execute external commands or processes.
+   - Use `fork()` when you want to create a new Node.js process and execute a Node.js script in that process.
+
+2. **Communication:**
+   - `spawn()` communicates with the child process through streams (stdout, stderr).
+   - `fork()` allows bidirectional communication between the parent and child processes using the `send()` method and the `message` event.
+
+3. **Process Type:**
+   - `spawn()` can be used for any type of process, not necessarily Node.js scripts.
+   - `fork()` is specifically designed for running Node.js scripts in a new process.
+
+4. **Environment:**
+   - `spawn()` allows you to customize the environment variables for the child process.
+   - `fork()` inherits the environment variables of the parent process by default, but you can also provide additional environment variables.
+
+In summary, while both `spawn()` and `fork()` can be used to create child processes, `spawn()` is more general-purpose and suited for running external commands, while `fork()` is designed for creating new Node.js processes and facilitates communication between the parent and child processes.
 
 **1. spawn():**
 
