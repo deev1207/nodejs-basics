@@ -44,6 +44,82 @@
 
 <br/>
 
+## Event loop, microtasks queue and event queue
+Certainly, let's delve into more detail about the event loop and queues, and how they work together to enable asynchronous programming.
+
+### Event Loop:
+
+The event loop is a fundamental concept in asynchronous programming that allows a program to efficiently manage and execute multiple tasks concurrently without blocking the main thread. In languages like JavaScript, the event loop is an integral part of the runtime environment.
+
+The event loop follows a continuous cycle of checking for tasks in the queue, executing them one by one, and then waiting for new tasks. Here is a simplified representation of the event loop:
+
+1. **Check the Call Stack:**
+   - The event loop starts by checking the call stack, which is a data structure that keeps track of the currently executing functions.
+   - If the call stack is empty, the event loop moves to the next step.
+
+2. **Check the Callback Queue:**
+   - The callback queue (also known as the task queue or message queue) holds tasks that are ready to be executed.
+   - If the callback queue is not empty, the event loop takes the first task from the queue and pushes it onto the call stack for execution.
+
+3. **Execute Task:**
+   - The task is executed on the call stack. This task may involve synchronous or asynchronous operations.
+
+4. **Completion:**
+   - After the task is complete, the event loop goes back to step 1 and repeats the process.
+
+### Queue:
+
+The queue is a data structure that follows the First-In-First-Out (FIFO) principle. In the context of the event loop, queues are used to organize and manage tasks. There are typically two main types of queues:
+
+1. **Callback Queue:**
+   - This queue holds callbacks of asynchronous operations (e.g., setTimeout, DOM events, AJAX requests).
+   - When an asynchronous operation completes, its callback is pushed into the callback queue.
+
+2. **Microtask Queue:**
+   - This queue holds microtasks, which are tasks with higher priority than the callback queue. Microtasks include promises and mutation observer callbacks.
+   - Microtasks are processed before the callback queue in the event loop cycle.
+
+### Detailed Example:
+
+Let's illustrate the event loop and queues with a more detailed example in JavaScript:
+
+```javascript
+console.log("Start");
+
+setTimeout(function () {
+  console.log("Timeout callback");
+}, 0);
+
+Promise.resolve().then(function () {
+  console.log("Promise resolved");
+});
+
+console.log("End");
+```
+
+Here's a step-by-step breakdown:
+
+1. `console.log("Start");` is pushed onto the call stack and executed.
+2. `setTimeout` is encountered. The timer is set, and the callback is placed in the callback queue.
+3. `Promise.resolve().then(...)` creates a microtask (Promise) and its callback is placed in the microtask queue.
+4. `console.log("End");` is executed.
+
+Now, the call stack is empty, and the event loop starts processing:
+
+- The microtask queue is checked first, executing the Promise callback (`console.log("Promise resolved");`).
+- The callback queue is then checked, executing the timeout callback (`console.log("Timeout callback");`).
+
+The output will be:
+
+```
+Start
+End
+Promise resolved
+Timeout callback
+```
+
+This example demonstrates how microtasks and callbacks are managed by the event loop using different queues. Understanding the event loop and queues is crucial for effective asynchronous programming.
+
 ## Q. What is Node.js?
 
 Node.js is an open-source server side runtime environment built on Chrome\'s V8 JavaScript engine. It provides an event driven, non-blocking (asynchronous) I/O and cross-platform runtime environment for building highly scalable server-side applications using JavaScript.
