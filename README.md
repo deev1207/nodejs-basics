@@ -922,30 +922,19 @@ As an event Listener once registered, exists throughout the life cycle of the pr
 </div>
 
 ## Q. What is the difference between process.nextTick() and setImmediate()?
+
+process.nextTick and setImmediate are both mechanisms in Node.js for scheduling a function to be executed in the next iteration of the event loop, but there are some differences between them.
+
+Timing:
+
+process.nextTick: The callback provided to process.nextTick is executed on the same phase of the event loop, just before the event loop continues or advances to the next iteration. It allows you to execute a callback immediately after the current operation completes but before the event loop moves on.
+setImmediate: The callback provided to setImmediate is executed in the next iteration of the event loop but in a different phase than process.nextTick. It is executed just before I/O events are triggered.
+Priority:
+
+process.nextTick: Callbacks scheduled with process.nextTick have a higher priority than those scheduled with setImmediate. This means that they will be executed before setImmediate callbacks.
+setImmediate: Callbacks scheduled with setImmediate are executed in a later phase of the event loop, giving I/O events a chance to execute first.
 In Node.js, `process.nextTick()` and `setImmediate()` are both used to schedule the execution of a callback function in the next iteration of the event loop. However, there are some key differences between the two:
 
-### `process.nextTick()`
-
-1. **Timing:**
-   - The callback registered with `process.nextTick()` will be executed in the current event loop cycle, right after the current operation completes and before the event loop moves to the next cycle.
-   - It allows you to execute a callback before the event loop continues with its normal flow.
-
-2. **Priority:**
-   - `process.nextTick()` callbacks have a higher priority than other callbacks scheduled by setTimeout or setImmediate.
-
-3. **Recursion:**
-   - If you have a lot of callbacks registered with `process.nextTick()`, they can create a deep recursion and potentially block the event loop. It's important to use `process.nextTick()` judiciously to avoid performance issues.
-
-### `setImmediate()`
-
-1. **Timing:**
-   - The callback registered with `setImmediate()` will be executed in the next iteration of the event loop, but after the I/O events. It's typically used to execute a callback at the beginning of the next event loop cycle.
-
-2. **Priority:**
-   - `setImmediate()` callbacks have a lower priority than `process.nextTick()` callbacks.
-
-3. **Blocking:**
-   - Since `setImmediate()` callbacks are executed after I/O events, they are less likely to be blocked by long-running CPU-bound tasks.
 
 ### Example:
 
